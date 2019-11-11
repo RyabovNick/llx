@@ -1,0 +1,64 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "plugins": ["fp"],
+  "globals": {
+    "fastify": true,
+    "__entry": true,
+    "__env": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "spread": true
+    }
+  },
+  "rules": {
+    "semi": [2, "never"],
+    "comma-dangle": ["error", "never"],
+    "no-underscore-dangle": 0,
+    "camelcase": 0,
+    "no-use-before-define": 0,
+    "max-len": [
+      "error",
+      {
+        "code": 255
+      }
+    ],
+    "no-param-reassign": "warn",
+    "linebreak-style": 0,
+    "no-console": 0,
+    "no-continue": 0,
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "markers": ["/"],
+          "exceptions": ["-", "+"]
+        },
+        "block": {
+          "markers": ["!"],
+          "exceptions": ["*"],
+          "balanced": true
+        }
+      }
+    ],
+    "max-lines": ["warn", 200],
+    "max-lines-per-function": ["warn", 60],
+    "complexity": ["warn", 5],
+    "max-nested-callbacks": ["warn", 2],
+    "max-depth": ["warn", 3],
+    // "fp/no-mutation": "warn",
+    // "fp/no-mutating-assign": "warn",
+    // "fp/no-mutating-methods": "warn",
+    // "fp/no-let": "warn",
+    "fp/no-this": "warn",
+    "max-params": ["warn", 2],
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }]
+  }
+}

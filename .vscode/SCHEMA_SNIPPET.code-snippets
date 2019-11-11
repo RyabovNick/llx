@@ -1,0 +1,19 @@
+{
+  "SCHEMA_SNIPPET_BACKEND": {
+    "prefix": "SCHEMA_SNIPPET_BACKEND",
+    "body": [
+      "schema: {",
+      "  body: {",
+      "    type: 'object',",
+      "    properties: {",
+      "      id: {",
+      "        type: 'integer'",
+      "      }",
+      "    },",
+      "    required: ['id']",
+      "  }",
+      "},"
+    ],
+    "description": "SCHEMA_SNIPPET_BACKEND"
+  }
+}
