@@ -1,10 +1,10 @@
-const { getJwtPayload } = require('../lib/getJwtPayload')
+const { getUserStatus } = require('../lib/getUserStatus')
 
-describe('getJwtPayload function', () => {
+describe('getUserStatus function', () => {
   describe('run function', () => {
     it('user is null', done => {
       const user = null
-      const jwtPayload = getJwtPayload(user)
+      const jwtPayload = getUserStatus(user)
 
       expect(jwtPayload).toHaveProperty('status')
       expect(jwtPayload).toHaveProperty('message')
@@ -17,7 +17,7 @@ describe('getJwtPayload function', () => {
 
     it('user is not null', done => {
       const user = {}
-      const jwtPayload = getJwtPayload(user)
+      const jwtPayload = getUserStatus(user)
 
       expect(jwtPayload).toHaveProperty('status')
       expect(jwtPayload).toHaveProperty('message')
@@ -32,7 +32,7 @@ describe('getJwtPayload function', () => {
       const user = {
         expired_at: '2019-11-12 07:16:39'
       }
-      const jwtPayload = getJwtPayload(user)
+      const jwtPayload = getUserStatus(user)
 
       expect(jwtPayload).toHaveProperty('status')
       expect(jwtPayload).toHaveProperty('message')
@@ -47,7 +47,7 @@ describe('getJwtPayload function', () => {
       const user = {
         expired_at: '2025-01-01 07:16:39'
       }
-      const jwtPayload = getJwtPayload(user)
+      const jwtPayload = getUserStatus(user)
 
       expect(jwtPayload).toHaveProperty('status')
       expect(jwtPayload).toHaveProperty('message')
@@ -66,7 +66,7 @@ describe('getJwtPayload function', () => {
           telegram: '123'
         }
       }
-      const jwtPayload = getJwtPayload(user)
+      const jwtPayload = getUserStatus(user)
 
       expect(jwtPayload).toHaveProperty('status')
       expect(jwtPayload).toHaveProperty('message')

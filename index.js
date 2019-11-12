@@ -1,3 +1,6 @@
+require('dotenv').config({
+  path: '.env.local'
+})
 const Database = require('./engine/database')
 const logger = require('pino')({ prettyPrint: process.env.FASTIFY_PRETTY })
 const fastify = require('fastify')({ logger })

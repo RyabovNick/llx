@@ -1,7 +1,7 @@
 const schema = require('../schemes/checkAuth')
 const Users = require('../models/users')
 const jwt = require('jsonwebtoken')
-const { getJwtPayload } = require('../lib/getJwtPayload')
+const { getUserStatus } = require('../lib/getUserStatus')
 
 fastify.route({
   method: 'POST',
@@ -20,7 +20,7 @@ fastify.route({
       }
     })
 
-    const jwtPayload = getJwtPayload(user)
+    const jwtPayload = getUserStatus(user)
 
     const signToken = jwt.sign(jwtPayload, req.client.secret, {
       expiresIn: 5 * 60 * 1000

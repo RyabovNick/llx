@@ -65,7 +65,7 @@ describe('/checkAuth endpoint', () => {
       done()
     })
 
-    it('random token', async done => {
+    it('valid token', async done => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/api/checkAuth',
