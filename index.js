@@ -4,7 +4,7 @@ const fastify = require('fastify')({ logger })
 const loader = require('fastify-loader')
 const cors = require('fastify-cors')
 const AuthDecorator = require('./decorators/auth')
-const getStatus = require('./lib/getStatus')
+const { getStatus } = require('./lib/getStatus')
 
 fastify.setErrorHandler((error, request, reply) => {
   const headers = {

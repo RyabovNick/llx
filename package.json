@@ -4,7 +4,8 @@
   "description": "Light login experience",
   "main": "index.js",
   "scripts": {
-    "test": "jest test --forceExit --detectOpenHandles --runInBand"
+    "test": "jest test --forceExit --detectOpenHandles --runInBand",
+    "coverage": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
