@@ -1,3 +1,4 @@
+const schema = require('../schemes/checkAuth')
 const Users = require('../models/users')
 const jwt = require('jsonwebtoken')
 const { getJwtPayload } = require('../lib/getJwtPayload')
@@ -9,17 +10,7 @@ fastify.route({
     .replace(/\\/g, '/')
     .replace('.js', ''),
   preValidation: [fastify.auth],
-  schema: {
-    body: {
-      type: 'object',
-      properties: {
-        token: {
-          type: 'string'
-        }
-      },
-      required: ['token']
-    }
-  },
+  schema,
   handler: async req => {
     const { token } = req.body
 

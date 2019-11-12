@@ -1,3 +1,4 @@
+const schema = require('../schemes/genToken')
 const Users = require('../models/users')
 const nanoid = require('nanoid')
 const moment = require('moment')
@@ -9,6 +10,7 @@ fastify.route({
     .replace(__entry, '')
     .replace(/\\/g, '/')
     .replace('.js', ''),
+  schema,
   preValidation: [fastify.auth],
   handler: async req => {
     const token = nanoid(16)
