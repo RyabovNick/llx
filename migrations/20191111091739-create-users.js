@@ -12,6 +12,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       client_id: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'clients',

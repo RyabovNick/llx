@@ -1,17 +1,25 @@
-'use strict'
-module.exports = (sequelize, DataTypes) => {
-  const users = sequelize.define(
-    'users',
-    {
-      token: DataTypes.STRING,
-      client_id: DataTypes.INTEGER,
-      payload: DataTypes.JSON,
-      expired_at: DataTypes.DATE
-    },
-    {}
-  )
-  users.associate = function(models) {
-    // associations can be defined here
-  }
-  return users
-}
+const { STRING, INTEGER, DATE, JSON } = require('sequelize')
+const Database = require('../engine/database')
+const Clients = require('./clients')
+
+const users = Database.define('users', {
+  id: {
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+    type: INTEGER
+  },
+  token: STRING,
+  client_id: {
+    allowNull: false,
+    type: INTEGER,
+    references: {
+      model: Clients,
+      key: 'id'
+    }
+  },
+  payload: JSON,
+  expired_at: DATE
+})
+
+module.exports = users
