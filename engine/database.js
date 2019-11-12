@@ -29,8 +29,6 @@ const database = new Sequelize(
       freezeTableName: true,
       underscored: true
     },
-
-    operatorsAliases: false,
     logging: false
   }
 )
