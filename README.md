@@ -13,7 +13,7 @@ Status codes:
 - `403` - permission denied (Inactive `api_key`)
 - `422` - validation errors
 
-API returns the token. You need to verify the token using the secret key to get the payload.
+API returns the `JWT`. You need to verify the `JWT` using the secret key to get the payload.
 
 [Example Node.js](https://www.npmjs.com/package/jsonwebtoken):
 
@@ -22,6 +22,12 @@ const jwt = require('jsonwebtoken')
 
 const decoded = jwt.verify(token, yourSecretKey)
 ```
+
+The resulting `JWT` contains `token` and `sources` (telegram). Each source contains:
+
+- `webUrl` - link to web application source (telegram may not be available in Russia)
+- `appUrl` - link to open application (desktop, mobile)
+- `qr` - with link to open desktop/mobile application
 
 ### checkAuth
 
