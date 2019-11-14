@@ -1,6 +1,6 @@
 # Docs
 
-## API
+## Public APIs
 
 ### genToken
 
@@ -49,3 +49,18 @@ Status contains one of:
 - `ok` - User authenticated
 - `expired` - Token expired
 - `serverError`
+
+## Private APIs
+
+### login
+
+Used by bots to authenticate users by token. Bots should send an `access_token` in the header.
+
+Status codes:
+
+- `200` - true. User Authenticated Successfully
+- `400` - `access_token` not found (Bad Request)
+- `403` - permission denied (Inactive `access_token`)
+- `422` - validation errors
+
+API returns true if user authenticated successfully. Returns code error with message if user has not been authenticated
