@@ -6,6 +6,7 @@ const logger = require('pino')({ prettyPrint: process.env.FASTIFY_PRETTY })
 const fastify = require('fastify')({ logger })
 const loader = require('fastify-loader')
 const cors = require('fastify-cors')
+const ws = require('fastify-websocket')
 const AuthDecorator = require('./decorators/auth')
 const { getStatus } = require('./lib/getStatus')
 
@@ -37,6 +38,15 @@ fastify.register(cors, {
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['token'],
   credentials: true
+})
+
+function handle(conn) {
+  conn.pipe(conn)
+  conn.socket.send('hi from server2')
+}
+
+fastify.register(ws, {
+  options: { maxPayload: 1048576 }
 })
 
 fastify.register(loader, {
