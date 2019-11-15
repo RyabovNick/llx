@@ -23,7 +23,7 @@ fastify.setErrorHandler((error, request, reply) => {
   const body = {
     statusCode,
     error: 'Bad Request',
-    message: error.message_i18n
+    message: error.message_i18n || error.message
   }
 
   reply
