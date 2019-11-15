@@ -4,6 +4,7 @@
   "description": "Light login experience",
   "main": "index.js",
   "scripts": {
+    "start": "node ./index.js",
     "test": "jest test --forceExit --detectOpenHandles --runInBand",
     "coverage": "jest --coverage"
   },
