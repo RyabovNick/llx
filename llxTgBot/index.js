@@ -8,7 +8,7 @@ const token = process.env.TELEGRAM_TOKEN
 const accessToken = process.env.ACCESS_TOKEN
 const url = `${process.env.API_PROTOCOL}://${process.env.API_HOST}${process.env.API_SUFFIX}`
 const { logAction } = require('./logger')
-const { messages } = require('./messages')
+const { messages } = require('../public/messages')
 
 axios.defaults.baseURL = url
 axios.defaults.headers.common['access_token'] = accessToken
