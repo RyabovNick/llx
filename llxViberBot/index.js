@@ -3,9 +3,9 @@ require('dotenv').config({
 })
 const { Bot, Events, Message } = require('viber-bot')
 const axios = require('axios')
-const https = require('https')
+const http = require('http')
 const fs = require('fs')
-const { logAction } = require('./logger')
+const { logAction, logger } = require('./logger')
 const { messages } = require('../public/messages')
 
 const bot = new Bot({
@@ -104,19 +104,16 @@ bot.on(
   }
 )
 
-const sslOptions = {
-  key: fs.readFileSync('../../../var/www/db.uni-dubna.ru/server/key.key'),
-  cert: fs.readFileSync('../../../var/www/db.uni-dubna.ru/server/cert.crt')
-}
-
-const port = process.env.VIBER_PORT
+const port = process.env.VIBER_HTTP_PORT
 const webhookUrl = process.env.VIBER_WEBHOOK
 
-https.createServer(sslOptions, bot.middleware()).listen(port, err => {
+http.createServer(bot.middleware()).listen(port, err => {
   if (err) {
     console.log('err: ', err)
+    logger.error('listen error', { context: err })
   }
   bot.setWebhook(webhookUrl).catch(err => {
     console.log('err: ', err)
+    logger.error('setWebhook error', { context: err })
   })
 })
