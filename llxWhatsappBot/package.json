@@ -1,0 +1,17 @@
+{
+  "name": "llxwhatsappbot",
+  "version": "1.0.0-alpha",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "rnv",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "fs-extra": "^8.1.0",
+    "puppeteer": "^2.0.0",
+    "winston": "^3.2.1"
+  }
+}
