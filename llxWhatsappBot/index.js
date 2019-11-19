@@ -45,9 +45,15 @@ const listener = async (request, response) => {
           //await load(page, dir);
           await start(dir)
 
-          response.json({ [dir]: true }).end()
+          response.writeHead(200, { 'Content-Type': 'application/json' })
+          const stringifyResponse = JSON.stringify({ [dir]: true })
+          response.end(stringifyResponse)
         }
-      } else response.json({ [dir]: true }).end()
+      } else {
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        const stringifyResponse = JSON.stringify({ [dir]: true })
+        response.end(stringifyResponse)
+      }
     }
     // res.end(serviceName)
   }
@@ -56,7 +62,7 @@ const listener = async (request, response) => {
   response.end()
 }
 
-https.createServer(listener).listen(process.env.API_PORT, async () => {
+https.createServer(listener).listen(process.env.PORT, async () => {
   const path = `${__dirname}/private`
   await fse.ensureDir(path)
   const content = fse.readdirSync(path)
@@ -65,5 +71,5 @@ https.createServer(listener).listen(process.env.API_PORT, async () => {
     await start(dir)
   }
 
-  logger.debug(`Server started on ${process.env.API_PORT}`)
+  logger.debug(`Server started on ${process.env.PORT}`)
 })
