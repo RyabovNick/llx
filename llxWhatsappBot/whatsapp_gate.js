@@ -229,8 +229,6 @@ const start = async dir => {
   await page.setUserAgent(process.env.WA_USER_AGENT)
   await page.goto(process.env.WA_WHATSAPP_WEB, { waitUntil: 'networkidle2' })
 
-  await page.screenshot({ path: 'page.png' })
-
   //page = await load(page, dir);
 
   try {

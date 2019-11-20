@@ -104,7 +104,7 @@ bot.on(
   }
 )
 
-const port = process.env.VIBER_HTTP_PORT
+const port = process.env.PORT
 const webhookUrl = process.env.VIBER_WEBHOOK
 
 http.createServer(bot.middleware()).listen(port, err => {
