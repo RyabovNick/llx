@@ -4,6 +4,7 @@ const nanoid = require('nanoid')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const { generateLinks } = require('../lib/generateLinks')
+const { cache } = require('../lib/cache')
 
 fastify.route({
   method: 'GET',
@@ -27,6 +28,8 @@ fastify.route({
     })
 
     const { appUrl, webUrl, qr } = await generateLinks({ source, token })
+
+    cache.set(token, 'waiting')
 
     const signToken = jwt.sign(
       {

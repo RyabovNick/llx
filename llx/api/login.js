@@ -4,6 +4,7 @@ const { Op } = require('sequelize')
 const moment = require('moment')
 const schema = require('../schemes/login')
 const { getUserStatus } = require('../lib/getUserStatus')
+const { cache } = require('../lib/cache')
 
 fastify.route({
   method: 'POST',
@@ -13,11 +14,13 @@ fastify.route({
     .replace('.js', ''),
   // temp API auth for bots with env
   preValidation: async (request, reply) => {
-    if (!request.headers['access_token']) throw new ErrorWithStatus('Permission denied', 403)
+    if (!request.headers['access_token'])
+      throw new ErrorWithStatus('Permission denied', 403)
 
     const access_token = request.headers['access_token']
 
-    if (access_token !== __env.BOT_ACCESS_TOKEN) throw new ErrorWithStatus('Permission denied', 403)
+    if (access_token !== __env.BOT_ACCESS_TOKEN)
+      throw new ErrorWithStatus('Permission denied', 403)
 
     return
   },
@@ -35,7 +38,8 @@ fastify.route({
 
     const exceptedUserStatus = 'waiting'
 
-    if (userStatus.status !== exceptedUserStatus) throw new ErrorWithStatus(userStatus.message, 400)
+    if (userStatus.status !== exceptedUserStatus)
+      throw new ErrorWithStatus(userStatus.message, 400)
 
     const [result] = await Users.update(
       {
@@ -51,6 +55,8 @@ fastify.route({
         }
       }
     )
+
+    cache.set(token, 'ok')
 
     return !result ? false : true
   }
