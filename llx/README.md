@@ -4,6 +4,14 @@
 
 ### genToken
 
+`/api/genToken/:source`.
+
+source can be one of:
+
+- telegram
+- whatsapp
+- viber
+
 Allows clients to generate a new token for the user. Only clients with a valid `api_key` can access API.
 
 Status codes:
@@ -11,7 +19,7 @@ Status codes:
 - `200` - ok
 - `400` - `api_key` not found (Bad Request)
 - `403` - permission denied (Inactive `api_key`)
-- `422` - validation errors
+- `422` - validation errors (or unknown source)
 
 API returns the `JWT`. You need to verify the `JWT` using the secret key to get the payload.
 

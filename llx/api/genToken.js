@@ -3,17 +3,19 @@ const Users = require('../models/users')
 const nanoid = require('nanoid')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const QRCode = require('qrcode')
+const { generateLinks } = require('../lib/generateLinks')
 
 fastify.route({
   method: 'GET',
-  url: __filename
-    .replace(__entry, '')
-    .replace(/\\/g, '/')
-    .replace('.js', ''),
+  url:
+    __filename
+      .replace(__entry, '')
+      .replace(/\\/g, '/')
+      .replace('.js', '') + '/:source',
   schema,
   preValidation: [fastify.auth],
   handler: async req => {
+    const { source } = req.params
     const token = nanoid(16)
 
     await Users.create({
@@ -24,20 +26,14 @@ fastify.route({
         .format('YYYY-MM-DD HH:mm:ss')
     })
 
-    const telegramWebUrl = `https://t.me/${__env.LLX_TG_BOT}?start=${token}`
-    const telegramAppUrl = `tg://resolve?domain=${__env.LLX_TG_BOT}&start=${token}`
-    const telegramQr = await QRCode.toDataURL(telegramAppUrl)
+    const { appUrl, webUrl, qr } = await generateLinks({ source, token })
 
     const signToken = jwt.sign(
       {
         token,
-        sources: {
-          telegram: {
-            webUrl: telegramWebUrl,
-            appUrl: telegramAppUrl,
-            qr: telegramQr
-          }
-        }
+        appUrl,
+        webUrl,
+        qr
       },
       req.client.secret,
       {
