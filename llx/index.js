@@ -6,6 +6,7 @@ const logger = require('pino')({ prettyPrint: process.env.FASTIFY_PRETTY })
 const fastify = require('fastify')({ logger })
 const loader = require('fastify-loader')
 const cors = require('fastify-cors')
+const serverTimeout = require('fastify-server-timeout')
 const AuthDecorator = require('./decorators/auth')
 const { getStatus } = require('./lib/getStatus')
 
@@ -45,6 +46,10 @@ fastify.register(loader, {
     __entry: __dirname,
     __env: process.env
   }
+})
+
+fastify.register(serverTimeout, {
+  serverTimeout: 5 * 60 * 1000
 })
 
 Database.authenticate().then(async () => {

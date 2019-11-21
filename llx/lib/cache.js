@@ -8,7 +8,7 @@ const options = {
   dispose: function(key, n) {
     n.close()
   },
-  maxAge: 30 * 60 * 1000
+  maxAge: 5 * 60 * 1000
 }
 
 const cache = new LRU(options)
