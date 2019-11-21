@@ -53,7 +53,7 @@ fastify.register(serverTimeout, {
 })
 
 Database.authenticate().then(async () => {
-  fastify.listen(3003, '0.0.0.0', async err => {
+  fastify.listen(process.env.PORT, '0.0.0.0', async err => {
     if (err) console.trace(err)
   })
 })
