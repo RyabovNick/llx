@@ -7,11 +7,10 @@
      * functions and creates the Store object.
      */
 const injectWAPI = () => {
-
     /**
      * This script contains WAPI functions that need to be run in the context of the webpage
      */
-
+    
     /**
      * Auto discovery the webpack object references of instances that contains all functions used by the WAPI
      * functions and creates the Store object.
@@ -23,7 +22,6 @@ const injectWAPI = () => {
                 let neededObjects = [
                     { id: "Store", conditions: (module) => (module.Chat && module.Msg) ? module : null },
                     { id: "MediaCollection", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.processFiles !== undefined) ? module.default : null },
-                    { id: "ChatClass", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.Collection !== undefined && module.default.prototype.Collection === "Chat") ? module : null },
                     { id: "MediaProcess", conditions: (module) => (module.BLOB) ? module : null },
                     { id: "Wap", conditions: (module) => (module.createGroup) ? module : null },
                     { id: "ServiceWorker", conditions: (module) => (module.default && module.default.killServiceWorker) ? module : null },
@@ -60,7 +58,7 @@ const injectWAPI = () => {
                                     break;
                                 }
                             }
-
+                        
                             let neededStore = neededObjects.find((needObj) => needObj.id === "Store");
                             window.Store = neededStore.foundedModule ? neededStore.foundedModule : {};
                             neededObjects.splice(neededObjects.indexOf(neededStore), 1);
@@ -69,7 +67,7 @@ const injectWAPI = () => {
                                     window.Store[needObj.id] = needObj.foundedModule;
                                 }
                             });
-                            window.Store.ChatClass.default.prototype.sendMessage = function (e) {
+                            window.Store.sendMessage = function (e) {
                                 return window.Store.SendTextMsgToChat(this, ...arguments);
                             }
                             return window.Store;
@@ -77,34 +75,34 @@ const injectWAPI = () => {
                     }
                 }
             }
-
+        
             webpackJsonp([], { 'parasite': (x, y, z) => getStore(z) }, ['parasite']);
         })();
     }
-
+    
     window.WAPI = {
         lastRead: {}
     };
-
+    
     window.WAPI._serializeRawObj = (obj) => {
         if (obj) {
             return obj.toJSON();
         }
         return {}
     };
-
+    
     /**
      * Serializes a chat object
      *
      * @param rawChat Chat object
      * @returns {{}}
      */
-
+    
     window.WAPI._serializeChatObj = (obj) => {
         if (obj == undefined) {
             return null;
         }
-
+    
         return Object.assign(window.WAPI._serializeRawObj(obj), {
             kind         : obj.kind,
             isGroup      : obj.isGroup,
@@ -114,12 +112,12 @@ const injectWAPI = () => {
             msgs         : null
         });
     };
-
+    
     window.WAPI._serializeContactObj = (obj) => {
         if (obj == undefined) {
             return null;
         }
-
+    
         return Object.assign(window.WAPI._serializeRawObj(obj), {
             formattedName      : obj.formattedName,
             isHighLevelVerified: obj.isHighLevelVerified,
@@ -134,12 +132,12 @@ const injectWAPI = () => {
             msgs               : null
         });
     };
-
+    
     window.WAPI._serializeMessageObj = (obj) => {
         if (obj == undefined) {
             return null;
         }
-
+    
         return Object.assign(window.WAPI._serializeRawObj(obj), {
             id            : obj.id._serialized,
             sender        : obj["senderObj"] ? WAPI._serializeContactObj(obj["senderObj"]): null,
@@ -158,12 +156,12 @@ const injectWAPI = () => {
             mediaData     : window.WAPI._serializeRawObj(obj['mediaData'])
         });
     };
-
+    
     window.WAPI._serializeNumberStatusObj = (obj) => {
         if (obj == undefined) {
             return null;
         }
-
+    
         return Object.assign({}, {
             id               : obj.jid,
             status           : obj.status,
@@ -171,12 +169,12 @@ const injectWAPI = () => {
             canReceiveMessage: (obj.status === 200)
         });
     };
-
+    
     window.WAPI._serializeProfilePicThumb = (obj) => {
         if (obj == undefined) {
             return null;
         }
-
+    
         return Object.assign({}, {
             eurl   : obj.eurl,
             id     : obj.id,
@@ -186,29 +184,29 @@ const injectWAPI = () => {
             tag    : obj.tag
         });
     }
-
+    
     window.WAPI.createGroup = function (name, contactsId) {
         if (!Array.isArray(contactsId)) {
             contactsId = [contactsId];
         }
-
+    
         return window.Store.Wap.createGroup(name, contactsId);
     };
-
+    
     window.WAPI.leaveGroup = function (groupId) {
         groupId = typeof groupId == "string" ? groupId : groupId._serialized;
         var group = WAPI.getChat(groupId);
         return group.sendExit()
     };
-
-
+    
+    
     window.WAPI.getAllContacts = function (done) {
         const contacts = window.Store.Contact.map((contact) => WAPI._serializeContactObj(contact));
-
+    
         if (done !== undefined) done(contacts);
         return contacts;
     };
-
+    
     /**
      * Fetches all contact objects from store, filters them
      *
@@ -220,7 +218,7 @@ const injectWAPI = () => {
         if (done !== undefined) done(contacts);
         return contacts;
     };
-
+    
     /**
      * Fetches contact object from store by ID
      *
@@ -230,11 +228,11 @@ const injectWAPI = () => {
      */
     window.WAPI.getContact = function (id, done) {
         const found = window.Store.Contact.get(id);
-
+    
         if (done !== undefined) done(window.WAPI._serializeContactObj(found))
         return window.WAPI._serializeContactObj(found);
     };
-
+    
     /**
      * Fetches all chat objects from store
      *
@@ -243,22 +241,22 @@ const injectWAPI = () => {
      */
     window.WAPI.getAllChats = function (done) {
         const chats = window.Store.Chat.map((chat) => WAPI._serializeChatObj(chat));
-
+    
         if (done !== undefined) done(chats);
         return chats;
     };
-
+    
     window.WAPI.haveNewMsg = function (chat) {
         return chat.unreadCount > 0;
     };
-
+    
     window.WAPI.getAllChatsWithNewMsg = function (done) {
         const chats = window.Store.Chat.filter(window.WAPI.haveNewMsg).map((chat) => WAPI._serializeChatObj(chat));
-
+    
         if (done !== undefined) done(chats);
         return chats;
     };
-
+    
     /**
      * Fetches all chat IDs from store
      *
@@ -267,11 +265,11 @@ const injectWAPI = () => {
      */
     window.WAPI.getAllChatIds = function (done) {
         const chatIds = window.Store.Chat.map((chat) => chat.id._serialized || chat.id);
-
+    
         if (done !== undefined) done(chatIds);
         return chatIds;
     };
-
+    
     /**
      * Fetches all groups objects from store
      *
@@ -280,11 +278,11 @@ const injectWAPI = () => {
      */
     window.WAPI.getAllGroups = function (done) {
         const groups = window.Store.Chat.filter((chat) => chat.isGroup);
-
+    
         if (done !== undefined) done(groups);
         return groups;
     };
-
+    
     /**
      * Fetches chat object from store by ID
      *
@@ -295,20 +293,21 @@ const injectWAPI = () => {
     window.WAPI.getChat = function (id, done) {
         id = typeof id == "string" ? id : id._serialized;
         const found = window.Store.Chat.get(id);
+        found.sendMessage = (found.sendMessage) ? found.sendMessage : function () { return window.Store.sendMessage.apply(this, arguments); };
         if (done !== undefined) done(found);
         return found;
     }
-
+    
     window.WAPI.getChatByName = function (name, done) {
         const found = window.Store.Chat.find((chat) => chat.name === name);
         if (done !== undefined) done(found);
         return found;
     };
-
+    
     window.WAPI.sendImageFromDatabasePicBot = function (picId, chatId, caption) {
         var chatDatabase = window.WAPI.getChatByName('DATABASEPICBOT');
         var msgWithImg   = chatDatabase.msgs.find((msg) => msg.caption == picId);
-
+    
         if (msgWithImg === undefined) {
             return false;
         }
@@ -317,25 +316,25 @@ const injectWAPI = () => {
             return false;
         }
         const oldCaption = msgWithImg.caption;
-
+    
         msgWithImg.id.id     = window.WAPI.getNewId();
         msgWithImg.id.remote = chatId;
         msgWithImg.t         = Math.ceil(new Date().getTime() / 1000);
         msgWithImg.to        = chatId;
-
+    
         if (caption !== undefined && caption !== '') {
             msgWithImg.caption = caption;
         } else {
             msgWithImg.caption = '';
         }
-
+    
         msgWithImg.collection.send(msgWithImg).then(function (e) {
             msgWithImg.caption = oldCaption;
         });
-
+    
         return true;
     };
-
+    
     window.WAPI.sendMessageWithThumb = function (thumb, url, title, description, chatId, done) {
         var chatSend = WAPI.getChat(chatId);
         if (chatSend === undefined) {
@@ -353,16 +352,16 @@ const injectWAPI = () => {
         if (done !== undefined) done(true);
         return true;
     };
-
+    
     window.WAPI.getNewId = function () {
         var text     = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
+    
         for (var i = 0; i < 20; i++)
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
     };
-
+    
     window.WAPI.getChatById = function (id, done) {
         let found = WAPI.getChat(id);
         if (found) {
@@ -370,12 +369,12 @@ const injectWAPI = () => {
         } else {
             found = false;
         }
-
+    
         if (done !== undefined) done(found);
         return found;
     };
-
-
+    
+    
     /**
      * I return all unread messages from an asked chat and mark them as read.
      *
@@ -398,20 +397,20 @@ const injectWAPI = () => {
         // get chat and its messages
         let chat     = WAPI.getChat(id);
         let messages = chat.msgs._models;
-
+    
         // initialize result list
         let output = [];
-
+    
         // look for unread messages, newest is at the end of array
         for (let i = messages.length - 1; i >= 0; i--) {
             // system message: skip it
             if (i === "remove") {
                 continue;
             }
-
+        
             // get message
             let messageObj = messages[i];
-
+        
             // found a read message: stop looking for others
             if (typeof (messageObj.isNewMsg) !== "boolean" || messageObj.isNewMsg === false) {
                 continue;
@@ -421,7 +420,7 @@ const injectWAPI = () => {
                 let message = WAPI.processMessageObj(messageObj,
                         includeMe,
                         includeNotifications);
-
+                
                 // save processed message on result list
                 if (message)
                     output.push(message);
@@ -433,8 +432,8 @@ const injectWAPI = () => {
         return output;
     }
     ;
-
-
+    
+    
     /**
      * Load more messages in chat object from store by ID
      *
@@ -452,7 +451,7 @@ const injectWAPI = () => {
             found.loadEarlierMsgs();
         }
     };
-
+    
     /**
      * Load more messages in chat object from store by ID
      *
@@ -471,12 +470,12 @@ const injectWAPI = () => {
         };
         x();
     };
-
+    
     window.WAPI.asyncLoadAllEarlierMessages = function (id, done) {
         done();
         window.WAPI.loadAllEarlierMessages(id);
     };
-
+    
     window.WAPI.areAllMessagesLoaded = function (id, done) {
         const found = WAPI.getChat(id);
         if (!found.msgs.msgLoadState.noEarlierMsgs) {
@@ -486,7 +485,7 @@ const injectWAPI = () => {
         if (done) done(true);
         return true
     };
-
+    
     /**
      * Load more messages in chat object from store by ID till a particular date
      *
@@ -495,11 +494,11 @@ const injectWAPI = () => {
      * @param done Optional callback function for async execution
      * @returns None
      */
-
+    
     window.WAPI.loadEarlierMessagesTillDate = function (id, lastMessage, done) {
         const found = WAPI.getChat(id);
         x = function () {
-            if (found.msgs.models[0].t > lastMessage) {
+            if (found.msgs.models[0].t > lastMessage && !found.msgs.msgLoadState.noEarlierMsgs) {
                 found.loadEarlierMsgs().then(x);
             } else {
                 done();
@@ -507,8 +506,8 @@ const injectWAPI = () => {
         };
         x();
     };
-
-
+    
+    
     /**
      * Fetches all group metadata objects from store
      *
@@ -517,11 +516,11 @@ const injectWAPI = () => {
      */
     window.WAPI.getAllGroupMetadata = function (done) {
         const groupData = window.Store.GroupMetadata.map((groupData) => groupData.all);
-
+    
         if (done !== undefined) done(groupData);
         return groupData;
     };
-
+    
     /**
      * Fetches group metadata object from store by ID
      *
@@ -531,19 +530,19 @@ const injectWAPI = () => {
      */
     window.WAPI.getGroupMetadata = async function (id, done) {
         let output = window.Store.GroupMetadata.get(id);
-
+    
         if (output !== undefined) {
             if (output.stale) {
                 await output.update();
             }
         }
-
+    
         if (done !== undefined) done(output);
         return output;
-
+    
     };
-
-
+    
+    
     /**
      * Fetches group participants
      *
@@ -555,7 +554,7 @@ const injectWAPI = () => {
         const metadata = await WAPI.getGroupMetadata(id);
         return metadata.participants;
     };
-
+    
     /**
      * Fetches IDs of group participants
      *
@@ -566,47 +565,48 @@ const injectWAPI = () => {
     window.WAPI.getGroupParticipantIDs = async function (id, done) {
         const output = (await WAPI._getGroupParticipants(id))
                 .map((participant) => participant.id);
-
+    
         if (done !== undefined) done(output);
         return output;
     };
-
+    
     window.WAPI.getGroupAdmins = async function (id, done) {
         const output = (await WAPI._getGroupParticipants(id))
                 .filter((participant) => participant.isAdmin)
                 .map((admin) => admin.id);
-
+    
         if (done !== undefined) done(output);
         return output;
     };
-
+    
     /**
      * Gets object representing the logged in user
      *
      * @returns {Array|*|$q.all}
      */
     window.WAPI.getMe = function (done) {
-        const contacts = window.Store.Contact.map((contact) => WAPI._serializeContactObj(contact));
-        const rawMe = contacts.find(contact => contact.isMe);
-
-        if (done !== undefined) done(rawMe);
-        return rawMe;
-    };
-    /* window.WAPI.getMe = function (done) {
         const rawMe = window.Store.Contact.get(window.Store.Conn.me);
-
+    
         if (done !== undefined) done(rawMe.all);
         return rawMe.all;
     };
-    */
+    
     window.WAPI.isLoggedIn = function (done) {
         // Contact always exists when logged in
         const isLogged = window.Store.Contact && window.Store.Contact.checksum !== undefined;
-
+    
         if (done !== undefined) done(isLogged);
         return isLogged;
     };
-
+    
+    window.WAPI.isConnected = function (done) {
+        // Phone Disconnected icon appears when phone is disconnected from the tnternet
+        const isConnected = document.querySelector('*[data-icon="alert-phone"]') !== null ? false : true;
+    
+        if (done !== undefined) done(isConnected);
+        return isConnected;
+    };
+    
     window.WAPI.processMessageObj = function (messageObj, includeMe, includeNotifications) {
         if (messageObj.isNotification) {
             if (includeNotifications)
@@ -620,18 +620,18 @@ const injectWAPI = () => {
         }
         return;
     };
-
+    
     window.WAPI.getAllMessagesInChat = function (id, includeMe, includeNotifications, done) {
         const chat     = WAPI.getChat(id);
         let   output   = [];
         const messages = chat.msgs._models;
-
+    
         for (const i in messages) {
             if (i === "remove") {
                 continue;
             }
             const messageObj = messages[i];
-
+        
             let message = WAPI.processMessageObj(messageObj, includeMe, includeNotifications)
             if (message)
                 output.push(message);
@@ -639,12 +639,12 @@ const injectWAPI = () => {
         if (done !== undefined) done(output);
         return output;
     };
-
+    
     window.WAPI.getAllMessageIdsInChat = function (id, includeMe, includeNotifications, done) {
         const chat     = WAPI.getChat(id);
         let   output   = [];
         const messages = chat.msgs._models;
-
+    
         for (const i in messages) {
             if ((i === "remove")
                     || (!includeMe && messages[i].isMe)
@@ -656,7 +656,7 @@ const injectWAPI = () => {
         if (done !== undefined) done(output);
         return output;
     };
-
+    
     window.WAPI.getMessageById = function (id, done) {
         let result = false;
         try {
@@ -665,14 +665,14 @@ const injectWAPI = () => {
                 result = WAPI.processMessageObj(msg, true, true);
             }
         } catch (err) { }
-
+    
         if (done !== undefined) {
             done(result);
         } else {
             return result;
         }
     };
-
+    
     window.WAPI.ReplyMessage = function (idMessage, message, done) {
         var messageObject = window.Store.Msg.get(idMessage);
         if (messageObject === undefined) {
@@ -680,7 +680,7 @@ const injectWAPI = () => {
             return false;
         }
         messageObject = messageObject.value();
-
+    
         const chat = WAPI.getChat(messageObject.chat.id)
         if (chat !== undefined) {
             if (done !== undefined) {
@@ -688,13 +688,13 @@ const injectWAPI = () => {
                     function sleep(ms) {
                         return new Promise(resolve => setTimeout(resolve, ms));
                     }
-
+                
                     var trials = 0;
-
+                
                     function check() {
                         for (let i = chat.msgs.models.length - 1; i >= 0; i--) {
                             let msg = chat.msgs.models[i];
-
+                        
                             if (!msg.senderObj.isMe || msg.body != message) {
                                 continue;
                             }
@@ -721,7 +721,7 @@ const injectWAPI = () => {
             return false;
         }
     };
-
+    
     window.WAPI.sendMessageToID = function (id, message, done) {
         try {
             window.getContact = (id) => {
@@ -748,7 +748,7 @@ const injectWAPI = () => {
         } catch (e) {
             if (window.Store.Chat.length === 0)
                 return false;
-
+        
             firstChat = Store.Chat.models[0];
             var originalID = firstChat.id;
             firstChat.id = typeof originalID === "string" ? id : new window.Store.UserConstructor(id, { intentionallyUsePrivateConstructor: true });
@@ -767,7 +767,7 @@ const injectWAPI = () => {
         if (done !== undefined) done(false);
         return false;
     }
-
+    
     window.WAPI.sendMessage = function (id, message, done) {
         var chat = WAPI.getChat(id);
         if (chat !== undefined) {
@@ -776,13 +776,13 @@ const injectWAPI = () => {
                     function sleep(ms) {
                         return new Promise(resolve => setTimeout(resolve, ms));
                     }
-
+                
                     var trials = 0;
-
+                
                     function check() {
                         for (let i = chat.msgs.models.length - 1; i >= 0; i--) {
                             let msg = chat.msgs.models[i];
-
+                        
                             if (!msg.senderObj.isMe || msg.body != message) {
                                 continue;
                             }
@@ -809,7 +809,7 @@ const injectWAPI = () => {
             return false;
         }
     };
-
+    
     window.WAPI.sendMessage2 = function (id, message, done) {
         var chat = WAPI.getChat(id);
         if (chat !== undefined) {
@@ -830,24 +830,24 @@ const injectWAPI = () => {
         if (done !== undefined) done(false)
         return false;
     };
-
+    
     window.WAPI.sendSeen = function (id, done) {
         var chat = window.WAPI.getChat(id);
         if (chat !== undefined) {
             if (done !== undefined) {
-                Store.SendSeen(Store.Chat.models[0], false).then(function () {
+                Store.SendSeen(chat, false).then(function () {
                     done(true);
                 });
                 return true;
             } else {
-                Store.SendSeen(Store.Chat.models[0], false);
+                Store.SendSeen(chat, false);
                 return true;
             }
         }
         if (done !== undefined) done();
         return false;
     };
-
+    
     function isChatMessage(message) {
         if (message.isSentByMe) {
             return false;
@@ -860,22 +860,22 @@ const injectWAPI = () => {
         }
         return true;
     }
-
-
+    
+    
     window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_unread_count, done) {
         const chats  = window.Store.Chat.models;
         let   output = [];
-
+    
         for (let chat in chats) {
             if (isNaN(chat)) {
                 continue;
             }
-
+        
             let messageGroupObj = chats[chat];
             let messageGroup    = WAPI._serializeChatObj(messageGroupObj);
-
+        
             messageGroup.messages = [];
-
+        
             const messages = messageGroupObj.msgs._models;
             for (let i = messages.length - 1; i >= 0; i--) {
                 let messageObj = messages[i];
@@ -889,7 +889,7 @@ const injectWAPI = () => {
                     }
                 }
             }
-
+        
             if (messageGroup.messages.length > 0) {
                 output.push(messageGroup);
             } else { // no messages with isNewMsg true
@@ -925,21 +925,21 @@ const injectWAPI = () => {
         }
         return output;
     };
-
+    
     window.WAPI.getGroupOwnerID = async function (id, done) {
         const output = (await WAPI.getGroupMetadata(id)).owner.id;
         if (done !== undefined) {
             done(output);
         }
         return output;
-
+    
     };
-
+    
     window.WAPI.getCommonGroups = async function (id, done) {
         let output = [];
-
+    
         groups = window.WAPI.getAllGroups();
-
+    
         for (let idx in groups) {
             try {
                 participants = await window.WAPI.getGroupParticipantIDs(groups[idx].id);
@@ -952,14 +952,14 @@ const injectWAPI = () => {
                 console.log(err);
             }
         }
-
+    
         if (done !== undefined) {
             done(output);
         }
         return output;
     };
-
-
+    
+    
     window.WAPI.getProfilePicSmallFromId = function (id, done) {
         window.Store.ProfilePicThumb.find(id).then(function (d) {
             if (d.img !== undefined) {
@@ -971,7 +971,7 @@ const injectWAPI = () => {
             done(false);
         })
     };
-
+    
     window.WAPI.getProfilePicFromId = function (id, done) {
         window.Store.ProfilePicThumb.find(id).then(function (d) {
             if (d.imgFull !== undefined) {
@@ -983,10 +983,10 @@ const injectWAPI = () => {
             done(false);
         })
     };
-
+    
     window.WAPI.downloadFileWithCredentials = function (url, done) {
         let xhr = new XMLHttpRequest();
-
+    
         xhr.onload = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
@@ -1003,18 +1003,18 @@ const injectWAPI = () => {
                 done(false);
             }
         };
-
+    
         xhr.open("GET", url, true);
         xhr.withCredentials = true;
         xhr.responseType = 'blob';
         xhr.send(null);
     };
-
-
+    
+    
     window.WAPI.downloadFile = function (url, done) {
         let xhr = new XMLHttpRequest();
-
-
+    
+    
         xhr.onload = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
@@ -1031,12 +1031,12 @@ const injectWAPI = () => {
                 done(false);
             }
         };
-
+    
         xhr.open("GET", url, true);
         xhr.responseType = 'blob';
         xhr.send(null);
     };
-
+    
     window.WAPI.getBatteryLevel = function (done) {
         if (window.Store.Conn.plugged) {
             if (done !== undefined) {
@@ -1050,18 +1050,18 @@ const injectWAPI = () => {
         }
         return output;
     };
-
+    
     window.WAPI.deleteConversation = function (chatId, done) {
         let userId       = new window.Store.UserConstructor(chatId, {intentionallyUsePrivateConstructor: true});
         let conversation = WAPI.getChat(userId);
-
+    
         if (!conversation) {
             if (done !== undefined) {
                 done(false);
             }
             return false;
         }
-
+    
         window.Store.sendDelete(conversation, false).then(() => {
             if (done !== undefined) {
                 done(true);
@@ -1071,39 +1071,39 @@ const injectWAPI = () => {
                 done(false);
             }
         });
-
+    
         return true;
     };
-
+    
     window.WAPI.deleteMessage = function (chatId, messageArray, revoke=false, done) {
         let userId       = new window.Store.UserConstructor(chatId, {intentionallyUsePrivateConstructor: true});
         let conversation = WAPI.getChat(userId);
-
+    
         if(!conversation) {
             if(done !== undefined) {
                 done(false);
             }
             return false;
         }
-
+    
         if (!Array.isArray(messageArray)) {
             messageArray = [messageArray];
         }
-
+    
         if (revoke) {
             conversation.sendRevokeMsgs(messageArray, conversation);    
         } else {
             conversation.sendDeleteMsgs(messageArray, conversation);    
         }
-
-
+    
+    
         if (done !== undefined) {
             done(true);
         }
-
+    
         return true;
     };
-
+    
     window.WAPI.checkNumberStatus = function (id, done) {
         window.Store.WapQuery.queryExist(id).then((result) => {
             if( done !== undefined) {
@@ -1118,10 +1118,10 @@ const injectWAPI = () => {
                 }));
             }
         });
-
+    
         return true;
     };
-
+    
     /**
      * New messages observable functions.
      */
@@ -1129,30 +1129,29 @@ const injectWAPI = () => {
     window.WAPI._newMessagesBuffer    = (sessionStorage.getItem('saved_msgs') != null) ? JSON.parse(sessionStorage.getItem('saved_msgs')) : [];
     window.WAPI._newMessagesDebouncer = null;
     window.WAPI._newMessagesCallbacks = [];
-
+    
     window.Store.Msg.off('add');
     sessionStorage.removeItem('saved_msgs');
-
+    
     window.WAPI._newMessagesListener = window.Store.Msg.on('add', (newMessage) => {
         if (newMessage && newMessage.isNewMsg && !newMessage.isSentByMe) {
-            let message = window.WAPI.processMessageObj(newMessage, false, true);
-            //let message = window.WAPI.processMessageObj(newMessage, false, false);
+            let message = window.WAPI.processMessageObj(newMessage, false, false);
             if (message) {
                 window.WAPI._newMessagesQueue.push(message);
                 window.WAPI._newMessagesBuffer.push(message);
             }
-
+        
             // Starts debouncer time to don't call a callback for each message if more than one message arrives
             // in the same second
             if (!window.WAPI._newMessagesDebouncer && window.WAPI._newMessagesQueue.length > 0) {
                 window.WAPI._newMessagesDebouncer = setTimeout(() => {
                     let queuedMessages = window.WAPI._newMessagesQueue;
-
+                
                     window.WAPI._newMessagesDebouncer = null;
                     window.WAPI._newMessagesQueue     = [];
-
+                
                     let removeCallbacks = [];
-
+                
                     window.WAPI._newMessagesCallbacks.forEach(function (callbackObj) {
                         if (callbackObj.callback !== undefined) {
                             callbackObj.callback(queuedMessages);
@@ -1161,7 +1160,7 @@ const injectWAPI = () => {
                             removeCallbacks.push(callbackObj);
                         }
                     });
-
+                
                     // Remove removable callbacks.
                     removeCallbacks.forEach(function (rmCallbackObj) {
                         let callbackIndex = window.WAPI._newMessagesCallbacks.indexOf(rmCallbackObj);
@@ -1171,14 +1170,14 @@ const injectWAPI = () => {
             }
         }
     });
-
+    
     window.WAPI._unloadInform = (event) => {
         // Save in the buffer the ungot unreaded messages
         window.WAPI._newMessagesBuffer.forEach((message) => {
             Object.keys(message).forEach(key => message[key] === undefined ? delete message[key] : '');
         });
         sessionStorage.setItem("saved_msgs", JSON.stringify(window.WAPI._newMessagesBuffer));
-
+    
         // Inform callbacks that the page will be reloaded.
         window.WAPI._newMessagesCallbacks.forEach(function (callbackObj) {
             if (callbackObj.callback !== undefined) {
@@ -1186,11 +1185,11 @@ const injectWAPI = () => {
             }
         });
     };
-
+    
     window.addEventListener("unload", window.WAPI._unloadInform, false);
     window.addEventListener("beforeunload", window.WAPI._unloadInform, false);
     window.addEventListener("pageunload", window.WAPI._unloadInform, false);
-
+    
     /**
      * Registers a callback to be called when a new message arrives the WAPI.
      * @param rmCallbackAfterUse - Boolean - Specify if the callback need to be executed only once
@@ -1201,7 +1200,7 @@ const injectWAPI = () => {
         window.WAPI._newMessagesCallbacks.push({ callback: done, rmAfterUse: rmCallbackAfterUse });
         return true;
     };
-
+    
     /**
      * Reads buffered new messages.
      * @param done - function - Callback function to be called contained the buffered messages.
@@ -1216,69 +1215,36 @@ const injectWAPI = () => {
         return bufferedMessages;
     };
     /** End new messages observable functions **/
-
+    
     window.WAPI.sendImage = function (imgBase64, chatid, filename, caption, done) {
-        //var idUser = new window.Store.UserConstructor(chatid);
-        var idUser = new window.Store.UserConstructor(chatid, { intentionallyUsePrivateConstructor: true });
-        // create new chat
-        return Store.Chat.find(idUser).then((chat) => {
-            var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-            var mc = new Store.MediaCollection();
-            mc.processFiles([mediaBlob], chat, 1).then(() => {
-                var media = mc.models[0];
-                /* media.sendToChat(chat, { caption: caption }).then(() => {
-                    if (done !== undefined) done(true);
-                }); */
-                media.sendToChat(chat, { caption: caption });
-
-                function sleep(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
-
-                var trials = 0;
-
-                function check() {
-                    let msg = mc.models[0];
-                    if (!msg.senderObj.isMe || msg.body != message) {
-                        
-                    }
-                    else if (done !== undefined) done(true);
-                    
-                    trials += 1;
-                    console.log(trials);
-                    if (trials > 30) {
-                        if (done !== undefined) done(true);
-                        return;
-                    }
-                    //sleep(0).then(check);
-                    check();
-                }
-                //check();
-
-                let msg = mc.models[0];
-                    if (!msg.senderObj.isMe || msg.body != message) {
-                        
-                    }
-                    else if (done !== undefined) done(true);
-                //if (done !== undefined) done(true);
-            });
+    //var idUser = new window.Store.UserConstructor(chatid);
+    var idUser = new window.Store.UserConstructor(chatid, { intentionallyUsePrivateConstructor: true });
+    // create new chat
+    return Store.Chat.find(idUser).then((chat) => {
+        var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+        var mc = new Store.MediaCollection();
+        mc.processFiles([mediaBlob], chat, 1).then(() => {
+            var media = mc.models[0];
+            media.sendToChat(chat, { caption: caption });
+            if (done !== undefined) done(true);
         });
+    });
     }
-
+    
     window.WAPI.base64ImageToFile = function (b64Data, filename) {
         var arr   = b64Data.split(',');
         var mime  = arr[0].match(/:(.*?);/)[1];
         var bstr  = atob(arr[1]);
         var n     = bstr.length;
         var u8arr = new Uint8Array(n);
-
+    
         while (n--) {
             u8arr[n] = bstr.charCodeAt(n);
         }
-
+    
         return new File([u8arr], filename, {type: mime});
     };
-
+    
     /**
      * Send contact card to a specific chat using the chat ids
      *
@@ -1292,14 +1258,14 @@ const injectWAPI = () => {
         contact = contact.map((c) => {
             return WAPI.getChat(c).__x_contact;
         });
-
+    
         if (contact.length > 1) {
             window.WAPI.getChat(to).sendContactList(contact);
         } else if (contact.length === 1) {
             window.WAPI.getChat(to).sendContact(contact[0]);
         }
     };
-
+    
     /**
      * Create an chat ID based in a cloned one
      *
@@ -1307,15 +1273,15 @@ const injectWAPI = () => {
      */
     window.WAPI.getNewMessageId = function (chatId) {
         var newMsgId = Store.Msg.models[0].__x_id.clone();
-
+    
         newMsgId.fromMe      = true;
         newMsgId.id          = WAPI.getNewId().toUpperCase();
         newMsgId.remote      = chatId;
         newMsgId._serialized = `${newMsgId.fromMe}_${newMsgId.remote}_${newMsgId.id}`
-
+    
         return newMsgId;
     };
-
+    
     /**
      * Send Customized VCard without the necessity of contact be a Whatsapp Contact
      *
@@ -1326,7 +1292,7 @@ const injectWAPI = () => {
         var chat    = Store.Chat.get(chatId);
         var tempMsg = Object.create(Store.Msg.models.filter(msg => msg.__x_isSentByMe)[0]);
         var newId   = window.WAPI.getNewMessageId(chatId);
-
+    
         var extend = {
             ack     : 0,
             id      : newId,
@@ -1336,13 +1302,13 @@ const injectWAPI = () => {
             to      : chatId,
             isNewMsg: !0,
         };
-
+    
         if (Array.isArray(vcard)) {
             Object.assign(extend, {
                 type     : "multi_vcard",
                 vcardList: vcard
             });
-
+        
             delete extend.body;
         } else {
             Object.assign(extend, {
@@ -1350,12 +1316,12 @@ const injectWAPI = () => {
                 subtype: vcard.displayName,
                 body   : vcard.vcard
             });
-
+        
             delete extend.vcardList;
         }
-
+    
         Object.assign(tempMsg, extend);
-
+    
         chat.addAndSendMsg(tempMsg);
     };
     /**
@@ -1388,7 +1354,7 @@ const injectWAPI = () => {
         done(false);
         return false;
     }
-
+    
     /**
      * Remove participant of Group
      * @param {*} idGroup '0000000000-00000000@g.us'
@@ -1404,7 +1370,7 @@ const injectWAPI = () => {
             }
         })
     }
-
+    
     /**
      * Promote Participant to Admin in Group
      * @param {*} idGroup '0000000000-00000000@g.us'
@@ -1421,7 +1387,7 @@ const injectWAPI = () => {
             done(false); return false;
         })
     }
-
+    
     /**
      * Demote Admin of Group
      * @param {*} idGroup '0000000000-00000000@g.us'
@@ -1441,7 +1407,6 @@ const injectWAPI = () => {
             done(true); return true;
         })
     }
-
 }
 
 module.exports = injectWAPI;
