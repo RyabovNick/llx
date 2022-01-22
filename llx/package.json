@@ -20,7 +20,7 @@
     "lru-cache": "^5.1.1",
     "moment": "^2.24.0",
     "mysql2": "^2.0.0",
-    "nanoid": "^2.1.6",
+    "nanoid": "^3.1.31",
     "qrcode": "^1.4.4",
     "sequelize": "^5.21.2"
   },
